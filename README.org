@@ -1,0 +1,33 @@
+* GOJira
+
+** Overview
+   Import a jira issue into org-mode as a todo.
+
+   Gojira is built on top of org-jira and acts as a simpler alternative interface
+   for using org-jira. It allows you to use an existing org file and import
+   issues as single standalone entities.
+
+   It's currently only one way. Jira->Org. I may someday add the other
+   direction.
+
+   Depends on org-jira here https://github.com/ahungry/org-jira
+
+** Usage
+   Install org-jira from https://github.com/ahungry/org-jira
+
+   Set your jira url
+   #+BEGIN_SRC elisp
+     (setq jiralib-url "https://jira.example.com")
+   #+END_SRC
+
+   To pull an issue from jira into your org file call
+   =gojira-insert-issue-as-org=. You will be prompted for the jira issue key.
+
+   It's easiest to map that to a keybinding.
+
+   Example of loading and binding. (uses use-package)
+   #+BEGIN_SRC elisp
+     (use-package gojira
+       :load-path "~/elisp/gojira/"
+       :bind (("C-c j" . gojira-insert-issue-as-org)))
+   #+END_SRC
