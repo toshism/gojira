@@ -42,7 +42,7 @@
          (issue-id (org-jira-get-issue-key issue))
          (issue-summary (org-jira-get-issue-summary issue))
          (issue-headline issue-summary)
-         (issue-hash ()))
+         (issue-tag (replace-regexp-in-string "-" "_" issue-id)))
     (progn
       (let ((status (org-jira-get-issue-val 'status issue)))
         (setq heading (concat (cond (org-jira-use-status-as-todo
@@ -50,12 +50,14 @@
                                     ((member status org-jira-done-states) "DONE")
                                     ("TODO")) " "
                                     issue-headline)))
-      `(headline (:title ,heading :level 0)
+      `(headline (:title ,heading :level 0 :tags (,issue-tag))
                  (property-drawer nil ((node-property (:key "CREATED" :value ,(org-jira-get-issue-val 'created issue)))
                                        (node-property (:key "UPDATED" :value ,(org-jira-get-issue-val 'updated issue)))
                                        (node-property (:key "ASSIGNEE" :value ,(org-jira-get-issue-val 'assignee issue)))
                                        (node-property (:key "REPORTER" :value ,(org-jira-get-issue-val 'reporter issue)))
-                                       (node-property (:key "PRIORITY" :value ,(org-jira-get-issue-val 'type issue)))
+                                       (node-property (:key "PRIORITY" :value ,(org-jira-get-issue-val 'priority issue)))
+                                       (node-property (:key "STATUS" :value ,(org-jira-get-issue-val 'status issue)))
+                                       (node-property (:key "TYPE" :value ,(org-jira-get-issue-val 'type issue)))
                                        (node-property (:key "ID" :value ,issue-id))
                                        (node-property (:key "JIRA_LINK" :value ,(concat jiralib-url "/browse/" issue-id)))))
                  (,(replace-regexp-in-string "" "" (org-jira-get-issue-val 'description issue)))))))
