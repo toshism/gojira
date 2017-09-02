@@ -9,7 +9,7 @@
    import issues as single standalone entities.
 
    It's currently only one way. Jira->Org. I may someday add the other
-   direction.
+   direction, but I doubt it.
 
 ** Install
    Install org-jira from https://github.com/ahungry/org-jira
@@ -43,3 +43,15 @@
    able to insert a jira task into an org file.
 
    Questions/comments [[tosh.lyons@gmail.com][tosh.lyons@gmail.com]]
+** TODOs
+*** TODO Import comments
+    Currently comments aren't imported. They should be.
+
+    - This is currently in progress on =feature/include-comments= branch
+*** TODO Add ability to update issues
+    Sometimes tasks change. Currently I just delete them and reimport them, but
+    it would be nice to be able to just update them, I think.
+
+    I may prefer to just be able to update the comments because I like to make
+    notes on the tasks sometimes and it could be hard not to overwrite them on
+    update.
