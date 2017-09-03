@@ -44,14 +44,14 @@
 
    Questions/comments [[tosh.lyons@gmail.com][tosh.lyons@gmail.com]]
 ** TODOs
-*** DONE Import comments
+*** DONE DONE Import comments
     CLOSED: [2017-09-02 Sat 22:24]
     Currently comments aren't imported. They should be.
 
     - DONE - This is currently in progress on =feature/include-comments= branch
-*** TODO Make this a proper package
-*** TODO Add package to MELPA
-*** TODO Add ability to update issues
+*** TODO TODO Make this a proper package
+*** TODO TODO Add package to MELPA
+*** TODO TODO Add ability to update issues
     Sometimes tasks change. Currently I just delete them and reimport them, but
     it would be nice to be able to just update them, I think.
 
