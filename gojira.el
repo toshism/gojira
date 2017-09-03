@@ -3,8 +3,10 @@
 ;; Copyright (C) 2017 Tosh Lyons
 
 ;; Author: Tosh Lyons <tosh.lyons@gmail.com>
-;; Keywords: lisp jira org-mode
 ;; Version: 0.0.1
+;; Package-Requires ((org-jira))
+;; Keywords: lisp, jira, org-mode
+;; URL: https://github.com/toshism/gojira
 
 ;;; Commentary:
 
@@ -15,7 +17,7 @@
 ;; as single standalone entities.
 ;;
 ;; It's currently only one way. Jira->Org. I may someday add the other
-;; direction.
+;; direction, but i doubt it.
 ;;
 ;; Depends on org-jira here https://github.com/ahungry/org-jira
 
@@ -28,16 +30,16 @@
   (save-excursion
     (org-insert-heading-respect-content)
     (backward-char)
-    (insert (org-element-interpret-data (gojira-get-issue-by-id issue-id)))
-    (org-narrow-to-subtree)
-    (gojira-insert-comments-for-issue-id issue-id)
-    (indent-region (point-min) (point-max))
-    (widen)
-    ))
+    (let ((heading-level (car (org-heading-components))))
+      (insert (org-element-interpret-data (gojira-get-issue-by-id issue-id)))
+      (org-narrow-to-subtree)
+      (gojira-insert-comments-for-issue-id issue-id (+ heading-level 1))
+      (indent-region (point-min) (point-max))
+      (widen))))
 
-(defun gojira-insert-comments-for-issue-id (issue-id)
+(defun gojira-insert-comments-for-issue-id (issue-id heading-level)
   "Insert all comments for given issue id"
-  (mapc #'(lambda (comment) (gojira-insert-org-element (gojira-comment-to-org-element comment))) (gojira-get-comments-by-issue-id issue-id)))
+  (mapc #'(lambda (comment) (gojira-insert-org-element (gojira-comment-to-org-element comment heading-level))) (gojira-get-comments-by-issue-id issue-id)))
 
 (defun gojira-insert-org-element (element)
   "Insert an org element at current point"
@@ -55,26 +57,25 @@
   "Get all comments for specified issue-id"
   (jiralib-get-comments issue-id))
 
-(defun gojira-process-comment-body (body)
+(defun gojira-process-body (body)
   "Format the body text of a comment"
   ;; TODO replace jira code blocks with org code blocks
-  (replace-regexp-in-string "" "" (replace-regexp-in-string "^" "  " body)))
+  (replace-regexp-in-string "^\*" "-" (replace-regexp-in-string "" "" (replace-regexp-in-string "^" "  " body))))
 
-(defun gojira-comment-to-org-element (comment)
+(defun gojira-comment-to-org-element (comment heading-level)
   "Take a comment and turn it into an org-element"
-  ;; this is how org-jira-update-comments-for-current-issue does the meaty part
   (let* ((comment-id (org-jira-get-comment-id comment))
          (comment-author (or (car (rassoc
                                    (org-jira-get-comment-author comment)
                                    org-jira-users))
                              (org-jira-get-comment-author comment)))
          (comment-headline (format "Comment: %s" comment-author)))
-    `(headline (:title ,comment-headline :level 2)
+    `(headline (:title ,comment-headline :level ,heading-level)
                (property-drawer nil ((node-property (:key "CREATED" :value ,(org-jira-get-comment-val 'created comment)))
                                      ,(unless (string= (org-jira-get-comment-val 'updated comment) (org-jira-get-comment-val 'created comment))
                                         `(node-property (:key "UPDATED" :value ,(org-jira-get-comment-val 'updated comment))))
                                      (node-property (:key "ID" :value ,(org-jira-get-comment-val 'id comment)))))
-               (,(gojira-process-comment-body (org-jira-find-value comment 'body))))))
+               (,(gojira-process-body (org-jira-find-value comment 'body))))))
 
 (defun gojira-get-issue-by-id (issue-id)
   (gojira-get-issue (car (org-jira-get-issue-by-id issue-id))))
@@ -103,6 +104,6 @@
                                        (node-property (:key "TYPE" :value ,(org-jira-get-issue-val 'type issue)))
                                        (node-property (:key "ID" :value ,issue-id))
                                        (node-property (:key "JIRA_LINK" :value ,(concat jiralib-url "/browse/" issue-id)))))
-                 (,(replace-regexp-in-string "" "" (org-jira-get-issue-val 'description issue)))))))
+                 (,(gojira-process-body (org-jira-get-issue-val 'description issue)))))))
 
 (provide 'gojira)
