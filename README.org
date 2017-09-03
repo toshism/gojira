@@ -44,10 +44,11 @@
 
    Questions/comments [[tosh.lyons@gmail.com][tosh.lyons@gmail.com]]
 ** TODOs
-*** TODO Import comments
+*** DONE Import comments
+    CLOSED: [2017-09-02 Sat 22:24]
     Currently comments aren't imported. They should be.
 
-    - This is currently in progress on =feature/include-comments= branch
+    - DONE - This is currently in progress on =feature/include-comments= branch
 *** TODO Make this a proper package
 *** TODO Add package to MELPA
 *** TODO Add ability to update issues
