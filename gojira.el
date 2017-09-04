@@ -38,15 +38,15 @@
       (widen))))
 
 (defun gojira-insert-comments-for-issue-id (issue-id heading-level)
-  "Insert all comments for given issue id"
+  "Insert all comments for given ISSUE-ID. HEADING-LEVEL is the level of the issue heading."
   (mapc #'(lambda (comment) (gojira-insert-org-element (gojira-comment-to-org-element comment heading-level))) (gojira-get-comments-by-issue-id issue-id)))
 
 (defun gojira-insert-org-element (element)
-  "Insert an org element at current point"
+  "Insert an org ELEMENT at current point."
   (insert (org-element-interpret-data element)))
 
 (defun gojira-narrow-to-issue-id (issue-id)
-  "Narrow to a single jira issue by id"
+  "Narrow to a single jira issue by ISSUE-ID."
   (let ((start (org-find-entry-with-id issue-id)))
     (when (and start (>= start (point-min))
                (<= start (point-max)))
@@ -54,16 +54,16 @@
       (org-narrow-to-subtree))))
 
 (defun gojira-get-comments-by-issue-id (issue-id)
-  "Get all comments for specified issue-id"
-  (jiralib-get-comments issue-id))
+  "Get all comments for specified ISSUE-ID."
+  (Jiralib-get-comments issue-id))
 
 (defun gojira-process-body (body)
-  "Format the body text of a comment"
+  "Format the BODY text of an issue/comment."
   ;; TODO replace jira code blocks with org code blocks
   (replace-regexp-in-string "^\*" "-" (replace-regexp-in-string "" "" (replace-regexp-in-string "^" "  " body))))
 
 (defun gojira-comment-to-org-element (comment heading-level)
-  "Take a comment and turn it into an org-element"
+  "Take a COMMENT and turn it into an org-element at the provided HEADING-LEVEL."
   (let* ((comment-id (org-jira-get-comment-id comment))
          (comment-author (or (car (rassoc
                                    (org-jira-get-comment-author comment)
@@ -107,3 +107,4 @@
                  (,(gojira-process-body (org-jira-get-issue-val 'description issue)))))))
 
 (provide 'gojira)
+;;; gojira.el ends here
