@@ -26,6 +26,7 @@
 (require 'org-jira)
 
 (defun gojira-insert-issue-as-org (issue-id)
+  "Insert jira issue ISSUE-ID into current org document."
   (interactive "sJira Issue: ")
   (save-excursion
     (org-insert-heading-respect-content)
@@ -78,9 +79,11 @@
                (,(gojira-process-body (org-jira-find-value comment 'body))))))
 
 (defun gojira-get-issue-by-id (issue-id)
+  "Get the issue with ISSUE-ID from jira. Return an org element."
   (gojira-get-issue (car (org-jira-get-issue-by-id issue-id))))
 
 (defun gojira-get-issue (issue)
+  "Format ISSUE into org element."
   (interactive)
   (let* ((proj-key (org-jira-get-issue-project issue))
          (issue-id (org-jira-get-issue-key issue))
@@ -107,4 +110,5 @@
                  (,(gojira-process-body (org-jira-get-issue-val 'description issue)))))))
 
 (provide 'gojira)
+
 ;;; gojira.el ends here
