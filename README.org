@@ -44,11 +44,6 @@
 
    The install section above binds this command to =C-c j=
 ** TODOs
-*** DONE DONE Import comments
-    CLOSED: [2017-09-02 Sat 22:24]
-    Currently comments aren't imported. They should be.
-
-    - DONE - This is currently in progress on =feature/include-comments= branch
 *** TODO TODO Make this a proper package
 *** TODO TODO Add package to MELPA
 *** TODO TODO Add ability to update issues
