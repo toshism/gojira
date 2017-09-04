@@ -11,6 +11,14 @@
    It's currently only one way. Jira->Org. I may someday add the other
    direction, but I doubt it.
 
+** Why?
+   I was tired of copying, pasting, and formatting jira tasks into org files.
+   Org-jira is neat but it didn't fit the way I wanted to use it. I have
+   existing org files and structures I want to continue using. I just want to be
+   able to insert a jira task into an org file.
+
+   Questions/comments [[tosh.lyons@gmail.com][tosh.lyons@gmail.com]]
+
 ** Install
    Install org-jira from https://github.com/ahungry/org-jira
 
@@ -35,14 +43,6 @@
    It's easiest to map that to a keybinding.
 
    The install section above binds this command to =C-c j=
-
-** Why?
-   I was tired of copying, pasting, and formatting jira tasks into org files.
-   Org-jira is neat but it didn't fit the way I wanted to use it. I have
-   existing org files and structures I want to continue using. I just want to be
-   able to insert a jira task into an org file.
-
-   Questions/comments [[tosh.lyons@gmail.com][tosh.lyons@gmail.com]]
 ** TODOs
 *** DONE DONE Import comments
     CLOSED: [2017-09-02 Sat 22:24]
