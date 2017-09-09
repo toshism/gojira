@@ -56,7 +56,7 @@
 
 (defun gojira-get-comments-by-issue-id (issue-id)
   "Get all comments for specified ISSUE-ID."
-  (Jiralib-get-comments issue-id))
+  (jiralib-get-comments issue-id))
 
 (defun gojira-process-body (body)
   "Format the BODY text of an issue/comment."
