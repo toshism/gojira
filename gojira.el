@@ -34,9 +34,16 @@
     (let ((heading-level (car (org-heading-components))))
       (insert (org-element-interpret-data (gojira-get-issue-by-id issue-id)))
       (org-narrow-to-subtree)
-      (gojira-insert-comments-for-issue-id issue-id (+ heading-level 1))
+      ;; (gojira-insert-org-element `(headline (:title "COMMENTS" :level ,(+ heading-level 1))
+      ;;                                       (property-drawer nil ((node-property (:key "ID" :value ,(concat issue-id "-comments")))))))
+      (gojira-insert-comments-header issue-id (+ heading-level 1))
+      (gojira-insert-comments-for-issue-id issue-id (+ heading-level 2))
       (indent-region (point-min) (point-max))
       (widen))))
+
+(defun gojira-insert-comments-header (issue-id heading-level)
+  (gojira-insert-org-element `(headline (:title "COMMENTS" :level ,heading-level)
+                                        (property-drawer nil ((node-property (:key "ID" :value ,(upcase (concat issue-id "-comments")))))))))
 
 (defun gojira-insert-comments-for-issue-id (issue-id heading-level)
   "Insert all comments for given ISSUE-ID. HEADING-LEVEL is the level of the issue heading."
@@ -70,7 +77,7 @@
                                    (org-jira-get-comment-author comment)
                                    org-jira-users))
                              (org-jira-get-comment-author comment)))
-         (comment-headline (format "Comment: %s" comment-author)))
+         (comment-headline (format "%s" comment-author)))
     `(headline (:title ,comment-headline :level ,heading-level)
                (property-drawer nil ((node-property (:key "CREATED" :value ,(org-jira-get-comment-val 'created comment)))
                                      ,(unless (string= (org-jira-get-comment-val 'updated comment) (org-jira-get-comment-val 'created comment))
