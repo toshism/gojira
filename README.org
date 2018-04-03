@@ -53,6 +53,7 @@
     I may prefer to just be able to update the comments because I like to make
     notes on the tasks sometimes and it could be hard not to overwrite them on
     update.
-*** TODO [#A] TODO Import comments and ability to update them
+*** TODO [#A] TODO Update comments
     I think importing and updating comments is important. This is one thing I do
-    want to allow updates to for sure.
+    want to allow updates to for sure. Comments are currently imported, but it's
+    not possible to update them.
