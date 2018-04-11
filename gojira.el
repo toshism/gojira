@@ -34,12 +34,13 @@
     (let ((heading-level (car (org-heading-components))))
       (insert (org-element-interpret-data (gojira-get-issue-by-id issue-id)))
       (org-narrow-to-subtree)
-      ;; (gojira-insert-org-element `(headline (:title "COMMENTS" :level ,(+ heading-level 1))
-      ;;                                       (property-drawer nil ((node-property (:key "ID" :value ,(concat issue-id "-comments")))))))
-      (gojira-insert-comments-header issue-id (+ heading-level 1))
-      (gojira-insert-comments-for-issue-id issue-id (+ heading-level 2))
+      (gojira-insert-comment-block issue-id (+ heading-level 1))
       (indent-region (point-min) (point-max))
       (widen))))
+
+(defun gojira-insert-comment-block (issue-id heading-level)
+  (gojira-insert-comments-header issue-id heading-level)
+  (gojira-insert-comments-for-issue-id issue-id (+ heading-level 1)))
 
 (defun gojira-insert-comments-header (issue-id heading-level)
   (gojira-insert-org-element `(headline (:title "COMMENTS" :level ,heading-level)
@@ -48,6 +49,19 @@
 (defun gojira-insert-comments-for-issue-id (issue-id heading-level)
   "Insert all comments for given ISSUE-ID. HEADING-LEVEL is the level of the issue heading."
   (mapc #'(lambda (comment) (gojira-insert-org-element (gojira-comment-to-org-element comment heading-level))) (gojira-get-comments-by-issue-id issue-id)))
+
+(defun gojira-refresh-comments-for-issue-id (issue-id)
+  "Refresh comments on issue from jira to org"
+  (save-excursion
+    (gojira-narrow-to-issue-id issue-id)
+    (let ((heading-level (car (org-heading-components)))
+          (comment-id-p (concat "+ID=\"" issue-id "-COMMENTS\""))
+          (comment-id (concat issue-id "-COMMENTS")))
+      (gojira-narrow-to-issue-id comment-id)
+      (org-cut-subtree)
+      (gojira-insert-comment-block issue-id (+ heading-level 1))
+      (indent-region (point-min) (point-max))
+      (widen))))
 
 (defun gojira-insert-org-element (element)
   "Insert an org ELEMENT at current point."
