@@ -32,8 +32,8 @@
     (org-insert-heading-respect-content)
     (backward-char)
     (let ((heading-level (car (org-heading-components))))
-      (insert (org-element-interpret-data (gojira-get-issue-by-id issue-id)))
       (org-narrow-to-subtree)
+      (insert (org-element-interpret-data (gojira-get-issue-by-id issue-id heading-level)))
       (gojira-insert-comment-block issue-id (+ heading-level 1))
       (indent-region (point-min) (point-max))
       (widen))))
@@ -43,8 +43,8 @@
   (gojira-insert-comments-for-issue-id issue-id (+ heading-level 1)))
 
 (defun gojira-insert-comments-header (issue-id heading-level)
-  (gojira-insert-org-element `(headline (:title "COMMENTS" :level ,heading-level)
-                                        (property-drawer nil ((node-property (:key "ID" :value ,(upcase (concat issue-id "-comments")))))))))
+  (gojira-insert-org-element `(headline (:title "Comments" :level ,heading-level)
+                                        (property-drawer nil ((node-property (:key "ID" :value ,(upcase (concat issue-id "-COMMENTS")))))))))
 
 (defun gojira-insert-comments-for-issue-id (issue-id heading-level)
   "Insert all comments for given ISSUE-ID. HEADING-LEVEL is the level of the issue heading."
@@ -62,6 +62,38 @@
       (gojira-insert-comment-block issue-id (+ heading-level 1))
       (indent-region (point-min) (point-max))
       (widen))))
+
+(defun gojira-update-element-by-id (element-id issue-id insert-func)
+  (save-excursion
+    (gojira-narrow-to-issue-id issue-id)
+    (let ((heading-level (car (org-heading-components))))
+      (gojira-narrow-to-issue-id element-id)
+      (org-cut-subtree)
+      (funcall insert-func issue-id (+ heading-level 1))
+      (indent-region (point-min) (point-max))
+      (widen))))
+
+(defun gojira-refresh-description-for-issue-id (issue-id)
+  (let ((issue (car (org-jira-get-issue-by-id issue-id))))
+    (gojira-update-element-by-id (concat issue-id "-DESCRIPTION") issue-id 'gojira-insert-description)))
+
+(defun gojira-insert-description (issue-id heading-level)
+  (let ((issue (car (org-jira-get-issue-by-id issue-id))))
+    (gojira-insert-org-element (gojira-get-description issue heading-level))))
+
+(defun gojira-refresh-comments-for-issue ()
+  "Refresh comments on current issue"
+  (gojira-refresh-comments-for-issue-id (gojira-find-issue-id)))
+
+(defun gojira-refresh-description-for-issue ()
+  "Refresh description on current issue"
+  (gojira-refresh-description-for-issue-id (gojira-find-issue-id)))
+
+(defun gojira-refresh-issue ()
+  "Refresh description and comments from jira for current issue"
+  (let ((issue-id (gojira-find-issue-id)))
+    (gojira-refresh-comments-for-issue-id issue-id)
+    (gojira-refresh-description-for-issue-id issue-id)))
 
 (defun gojira-find-issue-id ()
   "Get issue id from any place in issue"
@@ -113,11 +145,17 @@
                                      (node-property (:key "ID" :value ,(org-jira-get-comment-val 'id comment)))))
                (,(gojira-process-body (org-jira-find-value comment 'body))))))
 
-(defun gojira-get-issue-by-id (issue-id)
+(defun gojira-get-issue-by-id (issue-id heading-level)
   "Get the issue with ISSUE-ID from jira. Return an org element."
-  (gojira-get-issue (car (org-jira-get-issue-by-id issue-id))))
+  (gojira-get-issue (car (org-jira-get-issue-by-id issue-id)) heading-level))
 
-(defun gojira-get-issue (issue)
+(defun gojira-get-description (issue heading-level)
+  "Create Description org element"
+  `((headline (:title "Description" :level ,heading-level)
+             (property-drawer nil ((node-property (:key "ID" :value ,(concat (org-jira-get-issue-key issue) "-DESCRIPTION")))))
+             ,(gojira-process-body (org-jira-get-issue-val 'description issue)))))
+
+(defun gojira-get-issue (issue heading-level)
   "Format ISSUE into org element."
   (interactive)
   (let* ((proj-key (org-jira-get-issue-project issue))
@@ -142,7 +180,7 @@
                                        (node-property (:key "TYPE" :value ,(org-jira-get-issue-val 'type issue)))
                                        (node-property (:key "ID" :value ,issue-id))
                                        (node-property (:key "JIRA_LINK" :value ,(concat jiralib-url "/browse/" issue-id)))))
-                 (,(gojira-process-body (org-jira-get-issue-val 'description issue)))))))
+                 ,(gojira-get-description issue (+ heading-level 1))))))
 
 (provide 'gojira)
 
