@@ -109,6 +109,20 @@
           (setq continue nil)))
       issue-id)))
 
+(defun gojira-point-of-parent-issue ()
+  "Return a point in parent issue heading."
+  (save-excursion
+    (let ((continue t)
+          issue-id)
+      (while continue
+        ;; all imported issues should have a jira_link property
+        (if (and (org-entry-get nil "JIRA_LINK")
+                 (setq heading-point (point)))
+            (setq continue nil))
+        (unless (and continue (org-up-heading-safe))
+          (setq continue nil)))
+      heading-point)))
+
 (defun gojira-insert-org-element (element)
   "Insert an org ELEMENT at current point."
   (insert (org-element-interpret-data element)))
