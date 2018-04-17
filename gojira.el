@@ -73,6 +73,17 @@
       (indent-region (point-min) (point-max))
       (widen))))
 
+(defun gojira-refresh-issue-properties (issue-id)
+  "Update the properties for issue"
+  (let ((issue (car (org-jira-get-issue-by-id issue-id))))
+    (gojira-put-current-issue-property "CREATED" (org-jira-get-issue-val 'created issue))
+    (gojira-put-current-issue-property "UPDATED" (org-jira-get-issue-val 'updated issue))
+    (gojira-put-current-issue-property "ASSIGNEE" (org-jira-get-issue-val 'assignee issue))
+    (gojira-put-current-issue-property "REPORTER" (org-jira-get-issue-val 'reporter issue))
+    (gojira-put-current-issue-property "JIRA_PRIORITY" (org-jira-get-issue-val 'priority issue))
+    (gojira-put-current-issue-property "STATUS" (org-jira-get-issue-val 'status issue))
+    (gojira-put-current-issue-property "TYPE" (org-jira-get-issue-val 'type issue))))
+
 (defun gojira-refresh-description-for-issue-id (issue-id)
   (let ((issue (car (org-jira-get-issue-by-id issue-id))))
     (gojira-update-element-by-id (concat issue-id "-DESCRIPTION") issue-id 'gojira-insert-description)))
@@ -93,21 +104,20 @@
   "Refresh description and comments from jira for current issue"
   (let ((issue-id (gojira-find-issue-id)))
     (gojira-refresh-comments-for-issue-id issue-id)
-    (gojira-refresh-description-for-issue-id issue-id)))
+    (gojira-refresh-description-for-issue-id issue-id)
+    (gojira-refresh-issue-properties issue-id)))
+
+(defun gojira-get-current-issue-property (property)
+  "Return the value or PROPERTY for the current issue"
+  (org-entry-get (gojira-point-of-parent-issue) property))
+
+(defun gojira-put-current-issue-property (property value)
+  "Set the value of PROPERTY for current issue"
+  (org-entry-put (gojira-point-of-parent-issue) property value))
 
 (defun gojira-find-issue-id ()
   "Get issue id from any place in issue"
-  (save-excursion
-    (let ((continue t)
-          issue-id)
-      (while continue
-        ;; all imported issues should have a jira_link property
-        (if (and (org-entry-get nil "JIRA_LINK")
-                 (setq issue-id (org-entry-get (point) "ID")))
-            (setq continue nil))
-        (unless (and continue (org-up-heading-safe))
-          (setq continue nil)))
-      issue-id)))
+  (gojira-get-current-issue-property "ID"))
 
 (defun gojira-point-of-parent-issue ()
   "Return a point in parent issue heading."
@@ -166,8 +176,8 @@
 (defun gojira-get-description (issue heading-level)
   "Create Description org element"
   `((headline (:title "Description" :level ,heading-level)
-             (property-drawer nil ((node-property (:key "ID" :value ,(concat (org-jira-get-issue-key issue) "-DESCRIPTION")))))
-             ,(gojira-process-body (org-jira-get-issue-val 'description issue)))))
+              (property-drawer nil ((node-property (:key "ID" :value ,(concat (org-jira-get-issue-key issue) "-DESCRIPTION")))))
+              ,(gojira-process-body (org-jira-get-issue-val 'description issue)))))
 
 (defun gojira-get-issue (issue heading-level)
   "Format ISSUE into org element."
@@ -189,7 +199,7 @@
                                        (node-property (:key "UPDATED" :value ,(org-jira-get-issue-val 'updated issue)))
                                        (node-property (:key "ASSIGNEE" :value ,(org-jira-get-issue-val 'assignee issue)))
                                        (node-property (:key "REPORTER" :value ,(org-jira-get-issue-val 'reporter issue)))
-                                       (node-property (:key "PRIORITY" :value ,(org-jira-get-issue-val 'priority issue)))
+                                       (node-property (:key "JIRA_PRIORITY" :value ,(org-jira-get-issue-val 'priority issue)))
                                        (node-property (:key "STATUS" :value ,(org-jira-get-issue-val 'status issue)))
                                        (node-property (:key "TYPE" :value ,(org-jira-get-issue-val 'type issue)))
                                        (node-property (:key "ID" :value ,issue-id))
