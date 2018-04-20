@@ -4,20 +4,26 @@
 ** Overview
    Import a jira issue into org-mode as a todo.
 
-   Gojira is built on top of [[https://github.com/ahungry/org-jira][org-jira]] and acts as a simpler alternative
+   Gojira is built on top of [[https://github.com/ahungry/org-jira][org-jira]] and acts as a much simpler alternative
    interface for using org-jira. It allows you to use an existing org file and
-   import issues as single standalone entities.
+   import issue as single standalone entities.
 
    It's currently only one way. Jira->Org. I may someday add the other
    direction, but I doubt it.
 
 ** Why?
    I was tired of copying, pasting, and formatting jira tasks into org files.
-   Org-jira is neat but it didn't fit the way I wanted to use it. I have
+   Org-jira is nice but it didn't fit the way I wanted to use it. I have
    existing org files and structures I want to continue using. I just want to be
    able to insert a jira task into an org file.
 
    Questions/comments [[tosh.lyons@gmail.com][tosh.lyons@gmail.com]]
+
+** Current status
+   There are still a lot of things I would like to add, but it works. I use it
+   everyday.
+
+   For details see =TODOs= below.
 
 ** Install
    Install org-jira from https://github.com/ahungry/org-jira
@@ -27,7 +33,9 @@
    #+BEGIN_SRC elisp
      (use-package gojira
        :load-path "~/elisp/gojira/"
-       :bind (("C-c j" . gojira-insert-issue-as-org)))
+       :bind (("C-c j" . gojira-insert-issue-as-org)
+              ("C-c u" . gojira-refresh-issue)
+              ("C-c U" . gojira-refresh-issue-for-id)))
    #+END_SRC
 
    Set your jira url
@@ -36,23 +44,48 @@
    #+END_SRC
 
 ** Usage
-   To pull an issue from jira into your org file call
-   =gojira-insert-issue-as-org=. You will be prompted for the jira issue key and
-   the issue will be inserted at the same level as the heading at point.
+*** Import Issue
+    To pull an issue from jira into your org file call
+    =gojira-insert-issue-as-org=. You will be prompted for the jira issue key and
+    the issue will be inserted at the same level as the heading at point.
 
-   It's easiest to map that to a keybinding.
+    It's easiest to map that to a keybinding.
 
-   The install section above binds this command to =C-c j=
+    The install section above binds this command to =C-c j=
+*** Update Issue
+    Update means jira->org. I like to take a lot of notes in tasks so updates
+    will not alter or remove any content not under the =Description= or
+    =Comments= headings. So don't add anything there you want to keep through
+    an update.
+
+    To update the issue the point is currently in call =gojira-refresh-issue=.
+    This is bound to =C-c u= in the install section.
+
+    =gojira-refresh-issue-for-id= is an interactive function that will prompt
+    for the issue key to update.
+    This is bound to =C-c U= in the install section.
 ** TODOs
-*** TODO TODO Make this a proper package
 *** TODO TODO Add package to MELPA
-*** TODO TODO Add ability to update issues
+*** TODO TODO Clean up and speed up
+    There are a lot of inefficiencies and duplication here. Fix that.
+*** TODO TODO add configurable map for jira statuses to org todo states
+*** TODO TODO convert jira formatting to org
+    In the description copy and comments
+*** DONE DONE Add ability to update issues
+    CLOSED: [2018-04-19 Thu 23:13]
+    :LOGBOOK:
+    - State "DONE"       from "TODO"       [2018-04-19 Thu 23:13]
+    :END:
     Sometimes tasks change. Currently I just delete them and reimport them, but
     it would be nice to be able to just update them, I think.
 
     I may prefer to just be able to update the comments because I like to make
     notes on the tasks sometimes and it could be hard not to overwrite them on
     update.
-*** TODO [#A] TODO Import comments and ability to update them
+*** DONE DONE Import comments and ability to update them
+    CLOSED: [2018-04-19 Thu 23:13]
+    :LOGBOOK:
+    - State "DONE"       from "TODO"       [2018-04-19 Thu 23:13]
+    :END:
     I think importing and updating comments is important. This is one thing I do
     want to allow updates to for sure.
