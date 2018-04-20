@@ -3,7 +3,7 @@
 ;; Copyright (C) 2017 Tosh Lyons
 
 ;; Author: Tosh Lyons <tosh.lyons@gmail.com>
-;; Version: 0.0.1
+;; Version: 0.1
 ;; Package-Requires ((org-jira))
 ;; Keywords: lisp, jira, org-mode
 ;; URL: https://github.com/toshism/gojira
