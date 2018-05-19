@@ -64,29 +64,3 @@
     =gojira-refresh-issue-for-id= is an interactive function that will prompt
     for the issue key to update.
     This is bound to =C-c U= in the install section.
-** TODOs
-*** TODO TODO Add package to MELPA
-*** TODO TODO Clean up and speed up
-    There are a lot of inefficiencies and duplication here. Fix that.
-*** TODO TODO add configurable map for jira statuses to org todo states
-*** TODO TODO convert jira formatting to org
-    In the description copy and comments
-*** DONE DONE Add ability to update issues
-    CLOSED: [2018-04-19 Thu 23:13]
-    :LOGBOOK:
-    - State "DONE"       from "TODO"       [2018-04-19 Thu 23:13]
-    :END:
-    Sometimes tasks change. Currently I just delete them and reimport them, but
-    it would be nice to be able to just update them, I think.
-
-    I may prefer to just be able to update the comments because I like to make
-    notes on the tasks sometimes and it could be hard not to overwrite them on
-    update.
-*** DONE DONE Import comments and ability to update them
-    CLOSED: [2018-04-19 Thu 23:13]
-    :LOGBOOK:
-    - State "DONE"       from "TODO"       [2018-04-19 Thu 23:13]
-    :END:
-    I think importing and updating comments is important. This is one thing I do
-    want to allow updates to for sure. Comments are currently imported, but it's
-    not possible to update them.

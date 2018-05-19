@@ -3,7 +3,7 @@
 ;; Copyright (C) 2017 Tosh Lyons
 
 ;; Author: Tosh Lyons <tosh.lyons@gmail.com>
-;; Version: 0.1
+;; Version: 0.1.1
 ;; Package-Requires ((org-jira))
 ;; Keywords: lisp, jira, org-mode
 ;; URL: https://github.com/toshism/gojira
@@ -39,7 +39,7 @@
       (widen))))
 
 (defun gojira-refresh-issue-for-id (issue-id)
-  "Refresh description and comments from jira for ISSUE-ID"
+  "Refresh description and comments from jira for ISSUE-ID."
   (interactive "sJira Issue: ")
   (save-excursion
     (gojira-refresh-comments-for-issue-id issue-id)
@@ -47,7 +47,7 @@
     (gojira-refresh-issue-properties issue-id)))
 
 (defun gojira-refresh-issue ()
-  "Refresh description and comments from jira for current issue"
+  "Refresh description and comments from jira for current issue."
   (interactive)
   (let ((issue-id (gojira-find-issue-id)))
     (gojira-refresh-comments-for-issue-id issue-id)
@@ -67,7 +67,7 @@
   (mapc #'(lambda (comment) (gojira-insert-org-element (gojira-comment-to-org-element comment heading-level))) (gojira-get-comments-by-issue-id issue-id)))
 
 (defun gojira-refresh-comments-for-issue-id (issue-id)
-  "Refresh comments on issue from jira to org"
+  "Refresh comments on ISSUE-ID from jira to org."
   (save-excursion
     (gojira-narrow-to-issue-id issue-id)
     (let ((heading-level (car (org-heading-components)))
@@ -90,7 +90,7 @@
       (widen))))
 
 (defun gojira-refresh-issue-properties (issue-id)
-  "Update the properties for issue"
+  "Update the properties for ISSUE-ID."
   (let ((issue (car (org-jira-get-issue-by-id issue-id))))
     (goto-char (org-find-entry-with-id issue-id))
     (gojira-put-current-issue-property "CREATED" (org-jira-get-issue-val 'created issue))
@@ -102,31 +102,30 @@
     (gojira-put-current-issue-property "TYPE" (org-jira-get-issue-val 'type issue))))
 
 (defun gojira-refresh-description-for-issue-id (issue-id)
-  (let ((issue (car (org-jira-get-issue-by-id issue-id))))
-    (gojira-update-element-by-id (concat issue-id "-DESCRIPTION") issue-id 'gojira-insert-description)))
+    (gojira-update-element-by-id (concat issue-id "-DESCRIPTION") issue-id 'gojira-insert-description))
 
 (defun gojira-insert-description (issue-id heading-level)
   (let ((issue (car (org-jira-get-issue-by-id issue-id))))
     (gojira-insert-org-element (gojira-get-description issue heading-level))))
 
 (defun gojira-refresh-comments-for-issue ()
-  "Refresh comments on current issue"
+  "Refresh comments on current issue."
   (gojira-refresh-comments-for-issue-id (gojira-find-issue-id)))
 
 (defun gojira-refresh-description-for-issue ()
-  "Refresh description on current issue"
+  "Refresh description on current issue."
   (gojira-refresh-description-for-issue-id (gojira-find-issue-id)))
 
 (defun gojira-get-current-issue-property (property)
-  "Return the value or PROPERTY for the current issue"
+  "Return the value or PROPERTY for the current issue."
   (org-entry-get (gojira-point-of-parent-issue) property))
 
 (defun gojira-put-current-issue-property (property value)
-  "Set the value of PROPERTY for current issue"
+  "Set PROPERTY to VALUE for current issue."
   (org-entry-put (gojira-point-of-parent-issue) property value))
 
 (defun gojira-find-issue-id ()
-  "Get issue id from any place in issue"
+  "Get issue id from any place in issue."
   (gojira-get-current-issue-property "ID"))
 
 (defun gojira-point-of-parent-issue ()
