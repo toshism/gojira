@@ -102,8 +102,7 @@
     (gojira-put-current-issue-property "TYPE" (org-jira-get-issue-val 'type issue))))
 
 (defun gojira-refresh-description-for-issue-id (issue-id)
-  (let ((issue (car (org-jira-get-issue-by-id issue-id))))
-    (gojira-update-element-by-id (concat issue-id "-DESCRIPTION") issue-id 'gojira-insert-description)))
+    (gojira-update-element-by-id (concat issue-id "-DESCRIPTION") issue-id 'gojira-insert-description))
 
 (defun gojira-insert-description (issue-id heading-level)
   (let ((issue (car (org-jira-get-issue-by-id issue-id))))
