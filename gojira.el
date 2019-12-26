@@ -208,7 +208,7 @@
                  (property-drawer nil ((node-property (:key "CREATED" :value ,(org-jira-get-issue-val 'created issue)))
                                        (node-property (:key "UPDATED" :value ,(org-jira-get-issue-val 'updated issue)))
                                        (node-property (:key "ASSIGNEE" :value ,(org-jira-get-issue-val 'assignee issue)))
-                                       (node-property (:key "REPORTER" :value ,(org-jira-get-issue-val 'reporter issue)))p
+                                       (node-property (:key "REPORTER" :value ,(org-jira-get-issue-val 'reporter issue)))
                                        (node-property (:key "JIRA_PRIORITY" :value ,(org-jira-get-issue-val 'priority issue)))
                                        (node-property (:key "STATUS" :value ,(org-jira-get-issue-val 'status issue)))
                                        (node-property (:key "TYPE" :value ,(org-jira-get-issue-val 'type issue)))
