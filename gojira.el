@@ -161,7 +161,8 @@
 (defun gojira-process-body (body)
   "Format the BODY text of an issue/comment."
   ;; TODO replace jira code blocks with org code blocks
-  (replace-regexp-in-string "^\*" "-" (replace-regexp-in-string "" "" (replace-regexp-in-string "^" "  " body))))
+  ;; these regexes are garbage, do something better
+  (replace-regexp-in-string "^" "  " (replace-regexp-in-string "" "" (replace-regexp-in-string "^\*" "-" body))))
 
 (defun gojira-comment-to-org-element (comment heading-level)
   "Take a COMMENT and turn it into an org-element at the provided HEADING-LEVEL."
@@ -207,13 +208,59 @@
                  (property-drawer nil ((node-property (:key "CREATED" :value ,(org-jira-get-issue-val 'created issue)))
                                        (node-property (:key "UPDATED" :value ,(org-jira-get-issue-val 'updated issue)))
                                        (node-property (:key "ASSIGNEE" :value ,(org-jira-get-issue-val 'assignee issue)))
-                                       (node-property (:key "REPORTER" :value ,(org-jira-get-issue-val 'reporter issue)))
+                                       (node-property (:key "REPORTER" :value ,(org-jira-get-issue-val 'reporter issue)))p
                                        (node-property (:key "JIRA_PRIORITY" :value ,(org-jira-get-issue-val 'priority issue)))
                                        (node-property (:key "STATUS" :value ,(org-jira-get-issue-val 'status issue)))
                                        (node-property (:key "TYPE" :value ,(org-jira-get-issue-val 'type issue)))
                                        (node-property (:key "ID" :value ,issue-id))
                                        (node-property (:key "JIRA_LINK" :value ,(concat jiralib-url "/browse/" issue-id)))))
                  ,(gojira-get-description issue (+ heading-level 1))))))
+
+;;;;;; temp scratch
+;; first stab at creating a branch for a jira issue.
+;; this probalby doesn't really belong here, not positive i even want
+;; to do it, but it's pretty convenient. requires magit and helm
+
+(setq task-types '(("Task" . "feature/") ("Bug" . "bugfix/") ("Story" . "story/")))
+
+(defun gojira-branch-prefix ()
+  (cdr (or (assoc (gojira-get-current-issue-property "TYPE") task-types) (car task-types))))
+
+(defun gojira-spaces-to-single-dash (heading)
+  "HEADING stuff."
+  (replace-regexp-in-string " +" "-" heading))
+
+(defun gojira-heading-to-branch-name (heading)
+  "HEADING stuff."
+  (gojira-spaces-to-single-dash (replace-regexp-in-string "[^[:alnum:]|-| ]+" "" heading)))
+
+(defun gojira-get-heading-text ()
+  "Get heading text for current issue."
+  (interactive)
+  (save-excursion
+    (goto-char (gojira-point-of-parent-issue))
+    (gojira-heading-to-branch-name (nth 4 (org-heading-components)))))
+
+(defun gojira-branch-name-current-issue ()
+  (message (concat (gojira-branch-prefix) (gojira-find-issue-id) "-" (gojira-get-heading-text))))
+
+(setq gojira-helm-source
+      '((name . "Which repo?")
+        (candidates . magit-list-repos)
+        (action . (lambda (candidate)
+                    (message "%s" candidate)))))
+
+(defun gojira--create-branch (branch)
+  (progn
+    (cd (helm :sources '(gojira-helm-source)))
+    (magit-checkout "develop")
+    (magit-branch-spinoff branch)))
+
+(defun gojira-create-branch ()
+  (interactive)
+  (gojira--create-branch (gojira-branch-name-current-issue)))
+;;;;;;;
+
 
 (provide 'gojira)
 
